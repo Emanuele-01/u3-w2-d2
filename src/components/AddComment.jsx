@@ -11,7 +11,7 @@ const AddComment = (props) => {
   // };
 
   const [commentObj, setCommentObj] = useState(' ');
-  const [rate, setRate] = useState(1);
+  const [rate, setRate] = useState('1');
   const [id, setId] = useState(' ');
 
   const sendComment = async (e) => {
@@ -20,7 +20,7 @@ const AddComment = (props) => {
     try {
       const response = await fetch("https://striveschool-api.herokuapp.com/api/comments/", {
         method: "POST",
-        body: JSON.stringify(commentObj, rate, id),
+        body: JSON.stringify({comment : commentObj,rate : rate,elementId : id}),
         headers: {
           "Content-Type": "application/json",
           Authorization:

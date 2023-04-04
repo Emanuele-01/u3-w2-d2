@@ -1,21 +1,17 @@
 
 import CommentsList from "./CommentsList";
 import AddComment from "./AddComment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CommentArea = (props) => {
   // state = {
   //   comments: []
   // };
   const [comments, setComments] = useState([]);
+
   // componentDidMount ora avverrà al primo montaggio del componente, cioè dopo la prima selezione di una card nella lista
-  const componentDidMount = () => {
-    console.log("didMount()");
-
-    fetchComments();
-  }
-
   // fetchComments viene chiamato in: componentDidMount, componentDidUpdate e anche dopo la post interna ad AddComment
+
   const fetchComments = async () => {
     try {
       const response = await fetch("https://striveschool-api.herokuapp.com/api/comments/" +props.asin, {
@@ -36,28 +32,16 @@ const CommentArea = (props) => {
     }
   };
 
-  const componentDidUpdate = (prevProps) => {
-    console.log("didUpdate()");
+// eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(()=> {fetchComments()},[props.asin])
 
-    // controllo di guardia per rifare la fetch SOLO SE cambia la prop, non quando c'è un aggiornamento di stato
-    if (prevProps.asin !== this.props.asin) {
-      // in questo modo la lista dei commenti cambierà nel momento in cui selezioneremo un altra card, perché l'asin sarà cambiato dopo la nuova selezione
-      this.fetchComments();
-    } else {
-      console.log("componentDidUpdate but NO FETCH!");
-    }
-  }
-
-  const componentWillUnmount= () => {
-    console.log("willUnmount()");
-  }
 
     return (
       <div>
         {/* la prop fetchComments dà la possibilità ad AddComment di rifare la fetch e ottenere la lista di commenti aggiornati 
          che servirà poi a CommentList qua sotto per ricevere la nuova lista aggiornata, con anche l'ultimo appena inserito */}
         <AddComment asin={props.asin} />
-        <CommentsList comments={comments} />
+        <CommentsList comments={comments} fetchComments={fetchComments}/>
       </div>
     );
 }
