@@ -1,22 +1,26 @@
-import { Component } from "react";
+import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 
-class AddComment extends Component {
-  state = {
-    commentObj: {
-      comment: "",
-      rate: "1",
-      elementId: this.props.asin
-    }
-  };
+const AddComment = (props) => {
+  // state = {
+  //   commentObj: {
+  //     comment: "",
+  //     rate: "1",
+  //     elementId: this.props.asin
+  //   }
+  // };
 
-  sendComment = async e => {
+  const [commentObj, setCommentObj] = useState(' ');
+  const [rate, setRate] = useState(1);
+  const [id, setId] = useState(' ');
+
+  const sendComment = async (e) => {
     e.preventDefault();
 
     try {
       const response = await fetch("https://striveschool-api.herokuapp.com/api/comments/", {
         method: "POST",
-        body: JSON.stringify(this.state.commentObj),
+        body: JSON.stringify(commentObj, rate, id),
         headers: {
           "Content-Type": "application/json",
           Authorization:
@@ -28,45 +32,35 @@ class AddComment extends Component {
 
         // ricrea la lista di commenti nel livello superiore (il padre: CommentArea)
         // attraverso la referenza della funzione fetchComments passata come prop a questo componente
-        this.props.fetchComments();
+        // props.fetchComments();
 
         // resetta i campi (svuotarli)
-        this.setState({
-          commentObj: {
-            comment: "",
-            rate: "1",
-            elementId: this.props.asin
-          }
-        });
+        setCommentObj(' ');
+        setRate(1);
+        setId(' ');
       }
     } catch (error) {
       alert(error);
     }
   };
 
-  render() {
     return (
-      <Form onSubmit={this.sendComment}>
+      <Form onSubmit={sendComment}>
         <Form.Group className="mb-3" controlId="comment">
           <Form.Label>Commento</Form.Label>
           <Form.Control
             type="text"
             placeholder="Inserisci il commento"
-            value={this.state.commentObj.comment}
-            onChange={e => this.setState({ commentObj: { ...this.state.commentObj, comment: e.target.value } })}
+            value={commentObj}
+            onChange={e => setCommentObj(e.target.value)}
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="comment">
           <Form.Label>Voto</Form.Label>
           <Form.Select
-            value={this.state.commentObj.rate}
+            value={rate}
             onChange={e => {
-              this.setState({
-                commentObj: {
-                  ...this.state.commentObj,
-                  rate: e.target.value
-                }
-              });
+              setRate(e.target.value);
             }}
           >
             <option>1</option>
@@ -82,7 +76,6 @@ class AddComment extends Component {
         </Button>
       </Form>
     );
-  }
 }
 
 export default AddComment;
